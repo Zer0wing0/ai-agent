@@ -18,18 +18,20 @@ def main():
 
     # Parse user input
     parser = argparse.ArgumentParser(prog="AI-agent", description="Chatbot")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
     parser.add_argument("user_prompt", type=str, help="User prompt")
     args = parser.parse_args()
 
     messages = [
             {"role": "user", "content": args.user_prompt},
         ]
-     
-    generate_content(client, messages)
+    if args.verbose:
+            print(f"User prompt: {args.user_prompt}")
+    generate_content(client, messages, args)
     
 
 # Helper function that handles call to AI-client
-def generate_content(client, messages):
+def generate_content(client, messages, args):
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
@@ -38,11 +40,11 @@ def generate_content(client, messages):
     #Token usage
     if response.usage is None:
         raise RuntimeError("Failed API Request")
-    else:
+    elif args.verbose:
         prompt_tokens = response.usage.prompt_tokens 
         completion_tokens = response.usage.completion_tokens
         print(f"Prompt tokens: {prompt_tokens}\n"
-                f"Response tokens: {completion_tokens}")
+              f"Response tokens: {completion_tokens}")
 
     # Agent response to prompt
     print("Response: ", response.choices[0].message.content)
