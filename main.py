@@ -1,4 +1,5 @@
 import os
+import argparse
 from typing import Any
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -13,19 +14,22 @@ client = OpenAI(
 )
 
 def main():
-    print("Hello from Bootdev-ai-agent!")
+    print("Hello from Bootdev-AI-agent!")
+
+    # Parse user input
+    parser = argparse.ArgumentParser(prog="AI-agent", description="Chatbot")
+    parser.add_argument("user_prompt", type=str, help="User prompt")
+    args = parser.parse_args()
 
     response = client.chat.completions.create(
         model="openrouter/free",
 
-        # promt
+        # prompt
+        #messages=args.user_prompt
         messages=[
-            {
-                "role": "user",
-                "content": "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum.",
-            }
-        ],
-    )
+        {"role": "user", "content": args.user_prompt}
+    ]
+)
     #Token usage
     if response.usage is None:
         raise RuntimeError("Failed API Request")
@@ -35,7 +39,7 @@ def main():
         print(f"Prompt tokens: {prompt_tokens}\n"
               f"Response tokens: {completion_tokens}")
 
-    # Agent response to promt
+    # Agent response to prompt
     print("Response: ", response.choices[0].message.content)
 
 
