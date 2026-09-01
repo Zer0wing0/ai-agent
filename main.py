@@ -21,15 +21,20 @@ def main():
     parser.add_argument("user_prompt", type=str, help="User prompt")
     args = parser.parse_args()
 
+    messages = [
+            {"role": "user", "content": args.user_prompt},
+        ]
+     
+    generate_content(client, messages)
+    
+
+# Helper function that handles call to AI-client
+def generate_content(client, messages):
     response = client.chat.completions.create(
         model="openrouter/free",
-
-        # prompt
-        #messages=args.user_prompt
-        messages=[
-        {"role": "user", "content": args.user_prompt}
-    ]
-)
+        messages=messages,
+    )
+    
     #Token usage
     if response.usage is None:
         raise RuntimeError("Failed API Request")
@@ -37,11 +42,10 @@ def main():
         prompt_tokens = response.usage.prompt_tokens 
         completion_tokens = response.usage.completion_tokens
         print(f"Prompt tokens: {prompt_tokens}\n"
-              f"Response tokens: {completion_tokens}")
+                f"Response tokens: {completion_tokens}")
 
     # Agent response to prompt
     print("Response: ", response.choices[0].message.content)
-
 
 if __name__ == "__main__":
     main()
